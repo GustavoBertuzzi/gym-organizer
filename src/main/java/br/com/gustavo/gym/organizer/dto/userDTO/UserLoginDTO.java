@@ -1,12 +1,12 @@
-package br.com.gustavo.gym.organizer.dto.UserDTO;
+package br.com.gustavo.gym.organizer.dto.userDTO;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 public record UserLoginDTO(
-        @NotBlank(message = "Username não pode ser vazio")
+        @NotBlank(message = "email não pode ser vazio")
         @Email(message = "Email inválido")
-        String username,
+        String email,
 
         @NotBlank(message = "Password não pode ser vazio")
         String password)

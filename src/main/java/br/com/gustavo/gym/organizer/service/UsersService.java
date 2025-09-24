@@ -1,19 +1,24 @@
 package br.com.gustavo.gym.organizer.service;
 
-import br.com.gustavo.gym.organizer.dto.UserDTO.UserEditProfileDTO;
+import br.com.gustavo.gym.organizer.dto.userDTO.UserRegisterDTO;
 import br.com.gustavo.gym.organizer.exception.CredentialAlreadyInUseException;
 import br.com.gustavo.gym.organizer.exception.DuplicateUserException;
+import br.com.gustavo.gym.organizer.exception.ExerciseAlreadyInUse;
 import br.com.gustavo.gym.organizer.exception.UserNotFoundException;
+import br.com.gustavo.gym.organizer.model.ExercisesModel;
 import br.com.gustavo.gym.organizer.model.UsersModel;
+import br.com.gustavo.gym.organizer.repository.ExercisesRepository;
 import br.com.gustavo.gym.organizer.repository.UsersRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -24,37 +29,40 @@ public class UsersService implements UserDetailsService {
     private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private ExercisesRepository exercisesRepository;
+
     @Override
-    public UserDetails loadUserByUsername(String username) {
-        return usersRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado: " + username));
+    public UserDetails loadUserByUsername(String email) {
+        return usersRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado: " + email));
     }
 
-    public UsersModel register(String username, String password) {
-        Optional<UsersModel> existingUser = usersRepository.findByUsername(username);
+    public UsersModel register(String email, String password) {
+        Optional<UsersModel> existingUser = usersRepository.findByEmail(email);
 
         if (existingUser.isPresent()) {
             throw new CredentialAlreadyInUseException("Este email já está em uso por outro usuário.");
         }
 
         UsersModel user = new UsersModel();
-        user.setUsername(username);
+        user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
         return usersRepository.save(user);
     }
 
-    public UsersModel updateProfile(UserEditProfileDTO dto, String username) {
-        UsersModel user = usersRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado: " + username));
+    public UsersModel updateProfile(UserRegisterDTO dto, String email) {
+        UsersModel user = usersRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado: " + email));
 
-        if (dto.username() != null && !dto.username().isBlank() &&
-                !dto.username().equals(user.getUsername()) &&
-                usersRepository.findByUsername(dto.username()).isPresent()) {
+        if (dto.email() != null && !dto.email().isBlank() &&
+                !dto.email().equals(user.getEmail()) &&
+                usersRepository.findByEmail(dto.email()).isPresent()) {
             throw new DuplicateUserException("Email já está em uso por outro usuário.");
         }
 
-        if (dto.username() != null && !dto.username().isBlank()) {
-            user.setUsername(dto.username());
+        if (dto.email() != null && !dto.email().isBlank()) {
+            user.setEmail(dto.email());
         }
 
         if (dto.password() != null && !dto.password().isBlank()) {
@@ -65,10 +73,16 @@ public class UsersService implements UserDetailsService {
     }
 
     @Transactional
-    public void deleteByUsername(String username) {
-        UsersModel user = usersRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado: " + username));
+    public void deleteByEmail(String email) {
+        UsersModel user = usersRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado: " + email));
 
-        usersRepository.deleteByUsername(username);
+        List<ExercisesModel> exercise = exercisesRepository.findByUser(user);
+
+        if(!exercise.isEmpty()){
+            throw new ExerciseAlreadyInUse("Impossível deletar conta, existem exercicios vinculados ao usuário");
+        }
+
+        usersRepository.deleteByEmail(email);
     }
 }

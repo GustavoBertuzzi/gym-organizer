@@ -25,7 +25,7 @@
 # -----------------
 #   JAVA_HOME - location of a JDK home dir, required when download maven via java source
 #   MVNW_REPOURL - repo url base for downloading maven distribution
-#   MVNW_USERNAME/MVNW_PASSWORD - user and password for downloading maven
+#   MVNW_email/MVNW_PASSWORD - user and password for downloading maven
 #   MVNW_VERBOSE - true: enable verbose log; debug: trace the mvnw script; others: silence the output
 # ----------------------------------------------------------------------------
 
@@ -143,7 +143,7 @@ MAVEN_USER_HOME="${MAVEN_USER_HOME:-${HOME}/.m2}"
 MAVEN_HOME="${MAVEN_USER_HOME}/wrapper/dists/${distributionUrlNameMain-}/$(hash_string "$distributionUrl")"
 
 exec_maven() {
-  unset MVNW_VERBOSE MVNW_USERNAME MVNW_PASSWORD MVNW_REPOURL || :
+  unset MVNW_VERBOSE MVNW_email MVNW_PASSWORD MVNW_REPOURL || :
   exec "$MAVEN_HOME/bin/$MVN_CMD" "$@" || die "cannot exec $MAVEN_HOME/bin/$MVN_CMD"
 }
 
@@ -184,14 +184,14 @@ __MVNW_QUIET_WGET=--quiet __MVNW_QUIET_CURL=--silent __MVNW_QUIET_UNZIP=-q __MVN
 
 # normalize http auth
 case "${MVNW_PASSWORD:+has-password}" in
-'') MVNW_USERNAME='' MVNW_PASSWORD='' ;;
-has-password) [ -n "${MVNW_USERNAME-}" ] || MVNW_USERNAME='' MVNW_PASSWORD='' ;;
+'') MVNW_email='' MVNW_PASSWORD='' ;;
+has-password) [ -n "${MVNW_email-}" ] || MVNW_email='' MVNW_PASSWORD='' ;;
 esac
 
-if [ -z "${MVNW_USERNAME-}" ] && command -v wget >/dev/null; then
+if [ -z "${MVNW_email-}" ] && command -v wget >/dev/null; then
   verbose "Found wget ... using wget"
   wget ${__MVNW_QUIET_WGET:+"$__MVNW_QUIET_WGET"} "$distributionUrl" -O "$TMP_DOWNLOAD_DIR/$distributionUrlName" || die "wget: Failed to fetch $distributionUrl"
-elif [ -z "${MVNW_USERNAME-}" ] && command -v curl >/dev/null; then
+elif [ -z "${MVNW_email-}" ] && command -v curl >/dev/null; then
   verbose "Found curl ... using curl"
   curl ${__MVNW_QUIET_CURL:+"$__MVNW_QUIET_CURL"} -f -L -o "$TMP_DOWNLOAD_DIR/$distributionUrlName" "$distributionUrl" || die "curl: Failed to fetch $distributionUrl"
 elif set_java_home; then
@@ -203,7 +203,7 @@ elif set_java_home; then
 	{
 	  protected java.net.PasswordAuthentication getPasswordAuthentication()
 	  {
-	    return new java.net.PasswordAuthentication( System.getenv( "MVNW_USERNAME" ), System.getenv( "MVNW_PASSWORD" ).toCharArray() );
+	    return new java.net.PasswordAuthentication( System.getenv( "MVNW_email" ), System.getenv( "MVNW_PASSWORD" ).toCharArray() );
 	  }
 	  public static void main( String[] args ) throws Exception
 	  {

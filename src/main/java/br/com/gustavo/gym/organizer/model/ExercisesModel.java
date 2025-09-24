@@ -1,35 +1,36 @@
 package br.com.gustavo.gym.organizer.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import lombok.*;
 
-@Entity(name= "exercisesModel")
-@Table(name= "exercisesModel")
+@Entity
+@Table(name = "exercises")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 public class ExercisesModel {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name= "exerciseId" )
+    @Column(name = "exercise_id")
     private Long exerciseId;
 
-    @ManyToOne
-    @JoinColumn(name = "sessionId", nullable = false)
-    private WorkoutSessionsModel session;
+    @NotBlank
+    @Column(name = "name", nullable = false)
+    private String name;
 
-    @Column(name= "exerciseName", nullable = false)
-    private String exerciseName;
-    @Column(name= "exerciseWeight", nullable = false )
-    private Double exerciseWeight;
-    @Column(name= "exerciseRepetition", nullable = false )
-    private int exerciseRepetition;
-    @Column(name= "exerciseSets", nullable = false )
-    private int exerciseSets;
-    @Column(name= "breakTime" )
-    private int breakTime;
+    @Column(name = "muscle_group")
+    private String muscleGroup;
+
+    @Column(name = "equipment")
+    private String equipment;
+
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private UsersModel user;
 }

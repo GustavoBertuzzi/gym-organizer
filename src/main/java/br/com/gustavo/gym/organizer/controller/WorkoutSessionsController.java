@@ -1,12 +1,58 @@
-/*package br.com.gustavo.gym.organizer.controller;
+package br.com.gustavo.gym.organizer.controller;
 
-import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import br.com.gustavo.gym.organizer.dto.exercisesDTO.WorkoutSessionsDTO;
+import br.com.gustavo.gym.organizer.model.WorkoutSessionsModel;
+import br.com.gustavo.gym.organizer.service.exercises.WorkoutSessionsService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/sessions")
-@AllArgsConstructor
+@RequestMapping("/workout-sessions")
 public class WorkoutSessionsController {
-}*/
+
+    @Autowired
+    private WorkoutSessionsService workoutSessionsService;
+
+    @PostMapping("/add")
+    public ResponseEntity<?> addSession(@RequestBody WorkoutSessionsDTO dto, Authentication authentication) {
+        String email = authentication.getName();
+        WorkoutSessionsModel session = workoutSessionsService.addSession(dto, email);
+        return ResponseEntity.ok(session);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getAllSessions(Authentication authentication) {
+        String email = authentication.getName();
+        List<WorkoutSessionsModel> sessions = workoutSessionsService.getAllSessions(email);
+        return ResponseEntity.ok(sessions);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getSessionById(@PathVariable Long id, Authentication authentication) {
+        String email = authentication.getName();
+        WorkoutSessionsModel session = workoutSessionsService.getSessionById(id, email);
+        return ResponseEntity.ok(session);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateSession(
+            @PathVariable Long id,
+            @RequestBody WorkoutSessionsDTO dto,
+            Authentication authentication) {
+
+        String email = authentication.getName();
+        WorkoutSessionsModel session = workoutSessionsService.updateSession(id, dto, email);
+        return ResponseEntity.ok(session);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteSession(@PathVariable Long id, Authentication authentication) {
+        String email = authentication.getName();
+        workoutSessionsService.deleteSession(id, email);
+        return ResponseEntity.ok("Sessão deletada com sucesso");
+    }
+}

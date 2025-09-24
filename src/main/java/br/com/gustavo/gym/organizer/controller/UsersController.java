@@ -1,9 +1,8 @@
 package br.com.gustavo.gym.organizer.controller;
 
-import br.com.gustavo.gym.organizer.dto.UserDTO.UserEditProfileDTO;
-import br.com.gustavo.gym.organizer.dto.UserDTO.UserLoginDTO;
-import br.com.gustavo.gym.organizer.dto.UserDTO.UserRegisterDTO;
-import br.com.gustavo.gym.organizer.dto.UserDTO.UserTokenDTO;
+import br.com.gustavo.gym.organizer.dto.userDTO.UserLoginDTO;
+import br.com.gustavo.gym.organizer.dto.userDTO.UserRegisterDTO;
+import br.com.gustavo.gym.organizer.dto.userDTO.UserTokenDTO;
 import br.com.gustavo.gym.organizer.model.UsersModel;
 import br.com.gustavo.gym.organizer.service.LoginService;
 import br.com.gustavo.gym.organizer.service.UsersService;
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,15 +28,15 @@ public class UsersController {
 
     @PostMapping("/register")
     public ResponseEntity<UsersModel> register(@Valid @RequestBody UserRegisterDTO userRegisterDTO) {
-        UsersModel save = usersService.register(userRegisterDTO.username(), userRegisterDTO.password());
-        log.info("Usuário registrado com sucesso: {}", save.getUsername());
+        UsersModel save = usersService.register(userRegisterDTO.email(), userRegisterDTO.password());
+        log.info("Usuário registrado com sucesso: {}", save.getEmail());
         return ResponseEntity.ok(save);
     }
 
     @PostMapping("/login")
     public ResponseEntity<UserTokenDTO> login(@Valid @RequestBody UserLoginDTO userLoginDTO) {
-        UserTokenDTO userToken = loginService.authenticate(userLoginDTO.username(), userLoginDTO.password());
-        log.info("Usuário logado com sucesso: {}", userLoginDTO.username());
+        UserTokenDTO userToken = loginService.authenticate(userLoginDTO.email(), userLoginDTO.password());
+        log.info("Usuário logado com sucesso: {}", userLoginDTO.email());
         return ResponseEntity.ok(userToken);
     }
 
@@ -60,23 +58,18 @@ public class UsersController {
     }
 
     @PutMapping("/me")
-    public ResponseEntity<UsersModel> editPerfil(@RequestBody UserEditProfileDTO userEditProfileDTO,
-                                                 Authentication authentication) {
+    public ResponseEntity<UsersModel> editPerfil(@RequestBody UserRegisterDTO userRegisterDTO, Authentication authentication) {
 
-        if (userEditProfileDTO == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        String username = authentication.getName();
-        UsersModel edit = usersService.updateProfile(userEditProfileDTO, username);
+        String email = authentication.getName();
+        UsersModel edit = usersService.updateProfile(userRegisterDTO, email);
         log.info("Usuário atualizado com sucesso");
         return ResponseEntity.ok(edit);
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<String> deletePerfil(Authentication authentication) {
-        String username = authentication.getName();
-        usersService.deleteByUsername(username);
+        String email = authentication.getName();
+        usersService.deleteByEmail(email);
         return ResponseEntity.ok("Conta deletada com sucesso!");
     }
 }

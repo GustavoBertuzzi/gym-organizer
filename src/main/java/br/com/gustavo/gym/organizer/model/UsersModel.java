@@ -2,31 +2,39 @@ package br.com.gustavo.gym.organizer.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
 
-@Entity(name= "usersModel")
-@Table(name= "usersModel")
+@Entity
+@Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 public class UsersModel implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name= "userId")
-    private Long usersId;
-    @Column(name= "username")
-    private String username;
-    @Column(name= "password")
+    @Column(name = "user_id")
+    private Long userId;
+
+    @NotBlank
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
+
+    @NotBlank
+    @JsonIgnore
+    @Column(name = "password", nullable = false)
     private String password;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WorkoutSessionsModel> sessions;
 
     @JsonIgnore
     @Override
@@ -36,25 +44,24 @@ public class UsersModel implements UserDetails {
 
     @JsonIgnore
     @Override
-    public boolean isAccountNonExpired() {
-        return true;
+    public String getUsername() {
+        return email;
     }
 
     @JsonIgnore
     @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+    public boolean isAccountNonExpired() { return true; }
 
     @JsonIgnore
     @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+    public boolean isAccountNonLocked() { return true; }
 
     @JsonIgnore
     @Override
-    public boolean isEnabled() {
-        return true;
-    }
+    public boolean isCredentialsNonExpired() { return true; }
+
+    @JsonIgnore
+    @Override
+    public boolean isEnabled() { return true; }
+
 }

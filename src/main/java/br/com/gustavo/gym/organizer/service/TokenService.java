@@ -12,8 +12,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
-import com.auth0.jwt.JWT;
-
 @Service
 public class TokenService {
 
@@ -23,12 +21,11 @@ public class TokenService {
     public String generateToken(UsersModel usersModel){
         try{
             Algorithm algorithm = Algorithm.HMAC256(secret);
-            String token = JWT.create()
+            return JWT.create()
                     .withIssuer("auth-api")
-                    .withSubject(usersModel.getUsername())
+                    .withSubject(usersModel.getEmail()) // <- corrigido
                     .withExpiresAt(genExpirationDate())
                     .sign(algorithm);
-            return token;
         } catch(JWTCreationException exception){
             throw new RuntimeException("Error while generating token", exception);
         }
