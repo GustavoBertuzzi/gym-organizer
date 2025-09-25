@@ -1,19 +1,15 @@
+# =========================================
+# Configurações da aplicação
+# =========================================
 spring:
-  config:
-    activate:
-      on-profile: prod
+  application:
+    name: gym-organizer
 
-  datasource:
-    url: ${DATABASE_URL}              # Variável do Railway
-    username: ${DATABASE_USER}        # Variável do Railway
-    password: ${DATABASE_PASSWORD}    # Variável do Railway
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      maximum-pool-size: 10
-      minimum-idle: 2
-      idle-timeout: 10000
-      connection-timeout: 20000
-      max-lifetime: 30000
+  profiles:
+    active: prod
+
+  server:
+    port: ${PORT:8080}  # Pega a porta do Railway ou usa 8080
 
   jpa:
     hibernate:
@@ -26,10 +22,38 @@ spring:
         jdbc.lob.non_contextual_creation: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
-server:
-  port: 8080
+  datasource:
+    url: ${DATABASE_URL}           # Variável de ambiente do Railway
+    username: ${DATABASE_USER}    # Variável de ambiente do Railway
+    password: ${DATABASE_PASSWORD} # Variável de ambiente do Railway
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 10000
+      connection-timeout: 20000
+      max-lifetime: 30000
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope: email,profile
+            redirect-uri: ${GOOGLE_REDIRECT_URI}
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
+
+# =========================================
+# Configuração da API (JWT)
+# =========================================
 api:
   security:
     token:
-      secret: ${JWT_SECRET:mysecret}  # Default "mysecret" caso não esteja setado no Ra_
+      secret: ${JWT_SECRET:mysecret}  # Default "mysecret" caso não esteja setado no Railway
