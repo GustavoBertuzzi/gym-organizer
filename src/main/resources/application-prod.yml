@@ -4,13 +4,13 @@ spring:
       on-profile: prod
 
   datasource:
-    url: jdbc:postgresql://interchange.proxy.rlwy.net:59347/railway
-    username: postgres
-    password: xNlDoAlaykurJXOCbcRrfzqmEvOuTwNL
+    url: ${DATABASE_URL}              # Variável do Railway
+    username: ${DATABASE_USER}        # Variável do Railway
+    password: ${DATABASE_PASSWORD}    # Variável do Railway
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 3   # reduzido para evitar crash no Railway
-      minimum-idle: 1
+      maximum-pool-size: 10
+      minimum-idle: 2
       idle-timeout: 10000
       connection-timeout: 20000
       max-lifetime: 30000
@@ -27,9 +27,9 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
 server:
-  port: 8080   # Railway espera nessa porta
+  port: 8080
 
 api:
   security:
     token:
-      secret: ${JWT_SECRET:mysecret}   # se não setar no Railway, usa 'mysecret'
+      secret: ${JWT_SECRET:mysecret}  # Default "mysecret" caso não esteja setado no Ra_
