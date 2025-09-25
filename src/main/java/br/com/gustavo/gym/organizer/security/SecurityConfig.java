@@ -34,33 +34,34 @@ public class SecurityConfig {
         JwtAuthenticationFilter jwtFilter = new JwtAuthenticationFilter(tokenService, usersService);
 
         http
+                // Desabilita CSRF pois estamos usando JWT
                 .csrf(csrf -> csrf.disable())
+
+                // Configura endpoints públicos e protegidos
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/users/login",
                                 "/users/register",
-                                "/users/google",   // 🔑 libera o endpoint do Google
                                 "/error",
-                                "/oauth2/**",      // 🔑 permite endpoints internos do Spring Security
-                                "/login/oauth2/**" // 🔑 callback do Google
+                                "/oauth2/**",
+                                "/login/oauth2/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/home")
-                        .failureUrl("/login?error=true")
-                        .permitAll()
-                )
+
+                // Configura OAuth2 Login (Google)
                 .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/users/google") // 🔑 redireciona pro endpoint após login Google
+                        .loginPage("/login") // Página de login caso queira front-end
+                        .defaultSuccessUrl("/users/google") // Redireciona para endpoint do Google
                 )
+
+                // Configura logout
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout=true")
                 );
 
+        // Adiciona filtro JWT antes do filtro padrão de autenticação
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
