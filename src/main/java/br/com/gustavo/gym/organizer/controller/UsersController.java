@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+/*import org.springframework.security.oauth2.core.user.OAuth2User;*/
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -40,7 +40,7 @@ public class UsersController {
         return ResponseEntity.ok(userToken);
     }
 
-    @GetMapping("/google")
+    /* @GetMapping("/google")
     public ResponseEntity<String> googleUser(@AuthenticationPrincipal OAuth2User principal) {
         if (principal == null) {
             return ResponseEntity.status(401).body("Usuário não autenticado com Google");
@@ -55,7 +55,7 @@ public class UsersController {
                         " | Email: " + email +
                         " | Foto: " + picture
         );
-    }
+    } */
 
     @PutMapping("/me")
     public ResponseEntity<UsersModel> editPerfil(@RequestBody UserRegisterDTO userRegisterDTO, Authentication authentication) {
