@@ -3,9 +3,9 @@ spring:
     name: gym-organizer
 
   datasource:
-    url: jdbc:postgresql://interchange.proxy.rlwy.net:59347/railway
-    username: ${DATABASE_USER}
-    password: ${DATABASE_PASS}
+    url: jdbc:postgresql://postgres.railway.internal:5432/railway
+    username: postgres
+    password: xNlDoAlaykurJXOCbcRrfzqmEvOuTwNL
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
