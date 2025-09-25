@@ -3,7 +3,7 @@ spring:
     name: gym-organizer
 
   datasource:
-    url: jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
+    url: jdbc:postgresql://interchange.proxy.rlwy.net:59347/railway
     username: ${DATABASE_USER}
     password: ${DATABASE_PASS}
     driver-class-name: org.postgresql.Driver
