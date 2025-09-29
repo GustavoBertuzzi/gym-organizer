@@ -1,7 +1,9 @@
 package br.com.gustavo.gym.organizer.service.exercises;
 
 import br.com.gustavo.gym.organizer.dto.exercisesDTO.WorkoutSessionsDTO;
+import br.com.gustavo.gym.organizer.dto.responseDTO.WorkoutSessionsGetResponseDTO;
 import br.com.gustavo.gym.organizer.exception.UserNotFoundException;
+import br.com.gustavo.gym.organizer.model.ExercisesModel;
 import br.com.gustavo.gym.organizer.model.UsersModel;
 import br.com.gustavo.gym.organizer.model.WorkoutSessionsModel;
 import br.com.gustavo.gym.organizer.repository.UsersRepository;
@@ -37,11 +39,15 @@ public class WorkoutSessionsService {
     }
 
     // Listar todas as sessões do usuário
-    public List<WorkoutSessionsModel> getAllSessions(String email) {
+    public List<WorkoutSessionsGetResponseDTO> getAllSessions(String email) {
         UsersModel user = usersRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado: " + email));
 
-        return workoutSessionsRepository.findByUser(user);
+        List<WorkoutSessionsModel> sessions = workoutSessionsRepository.findByUser(user);
+
+        return sessions.stream()
+                .map(WorkoutSessionsGetResponseDTO::new)
+                .toList();
     }
 
     // Buscar sessão por ID

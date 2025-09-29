@@ -1,6 +1,7 @@
 package br.com.gustavo.gym.organizer.controller;
 
 import br.com.gustavo.gym.organizer.dto.exercisesDTO.WorkoutSessionsDTO;
+import br.com.gustavo.gym.organizer.dto.responseDTO.WorkoutSessionsGetResponseDTO;
 import br.com.gustavo.gym.organizer.model.WorkoutSessionsModel;
 import br.com.gustavo.gym.organizer.service.exercises.WorkoutSessionsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,9 @@ public class WorkoutSessionsController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllSessions(Authentication authentication) {
+    public ResponseEntity<List<WorkoutSessionsGetResponseDTO>> getAllSessions(Authentication authentication) {
         String email = authentication.getName();
-        List<WorkoutSessionsModel> sessions = workoutSessionsService.getAllSessions(email);
+        List<WorkoutSessionsGetResponseDTO> sessions = workoutSessionsService.getAllSessions(email);
         return ResponseEntity.ok(sessions);
     }
 
