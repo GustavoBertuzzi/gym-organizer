@@ -19,11 +19,11 @@ public class TokenService {
     private String secret;
 
     public String generateToken(UsersModel usersModel){
-        try{
+        try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.create()
                     .withIssuer("auth-api")
-                    .withSubject(usersModel.getEmail()) // <- corrigido
+                    .withSubject(usersModel.getEmail()) // email do usuário
                     .withExpiresAt(genExpirationDate())
                     .sign(algorithm);
         } catch(JWTCreationException exception){
@@ -32,15 +32,15 @@ public class TokenService {
     }
 
     public String validateToken(String token){
-        try{
+        try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.require(algorithm)
                     .withIssuer("auth-api")
                     .build()
                     .verify(token)
-                    .getSubject();
+                    .getSubject(); // retorna o email
         } catch (JWTVerificationException exception) {
-            return "";
+            return null; // token inválido ou expirado
         }
     }
 
