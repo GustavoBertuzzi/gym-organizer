@@ -97,7 +97,7 @@ public class ExercisesService {
                 .orElseThrow(() -> new ExerciseNotFoundException("Exercício não encontrado: " + exerciseId));
 
         if (!exercise.getUser().getUserId().equals(user.getUserId())) {
-            throw new RuntimeException("Você não tem permissão para deletar este exercício.");
+            throw new PermissionDeniedException("Você não tem permissão para deletar este exercício.");
         }
 
         exercisesRepository.deleteById(exerciseId);

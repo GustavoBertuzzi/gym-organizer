@@ -25,7 +25,7 @@ public class WorkoutSessionsController {
         return ResponseEntity.ok(session);
     }
 
-    @GetMapping
+    @GetMapping("/get")
     public ResponseEntity<List<WorkoutSessionsGetResponseDTO>> getAllSessions(Authentication authentication) {
         String email = authentication.getName();
         List<WorkoutSessionsGetResponseDTO> sessions = workoutSessionsService.getAllSessions(email);
