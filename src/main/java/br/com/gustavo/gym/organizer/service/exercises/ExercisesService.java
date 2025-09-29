@@ -66,6 +66,10 @@ public class ExercisesService {
             throw new RuntimeException("Você não tem permissão para atualizar este exercício.");
         }
 
+        if (!exercise.getExerciseId().equals(exerciseId)) {
+            throw new ExerciseNotFoundException("Exercício não encontrado: " + exerciseId);
+        }
+
         if (dto.name() != null && !dto.name().isBlank()) {
             exercise.setName(dto.name());
         }
