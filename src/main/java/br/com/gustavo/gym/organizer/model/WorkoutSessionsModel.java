@@ -20,7 +20,7 @@ public class WorkoutSessionsModel {
     @Column(name = "session_id")
     private Long sessionId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private UsersModel user;
 
@@ -37,6 +37,6 @@ public class WorkoutSessionsModel {
     private String notes;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<WorkoutExerciseModel> exercises;
 }
