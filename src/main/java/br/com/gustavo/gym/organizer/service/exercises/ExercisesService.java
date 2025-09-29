@@ -1,6 +1,7 @@
 package br.com.gustavo.gym.organizer.service.exercises;
 
 import br.com.gustavo.gym.organizer.dto.exercisesDTO.ExercisesAddDTO;
+import br.com.gustavo.gym.organizer.exception.ExerciseAlreadyInUse;
 import br.com.gustavo.gym.organizer.exception.ExerciseNotFoundException;
 import br.com.gustavo.gym.organizer.exception.UserNotFoundException;
 import br.com.gustavo.gym.organizer.model.ExercisesModel;
@@ -34,7 +35,7 @@ public class ExercisesService {
         );
 
         if (exists) {
-            throw new RuntimeException("Exercício já cadastrado com exatamente os mesmos dados.");
+            throw new ExerciseAlreadyInUse("Exercício já cadastrado com exatamente os mesmos dados.");
         }
 
         ExercisesModel exercise = new ExercisesModel();
