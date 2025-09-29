@@ -3,6 +3,7 @@ package br.com.gustavo.gym.organizer.service.exercises;
 import br.com.gustavo.gym.organizer.dto.exercisesDTO.ExercisesAddDTO;
 import br.com.gustavo.gym.organizer.exception.ExerciseAlreadyInUse;
 import br.com.gustavo.gym.organizer.exception.ExerciseNotFoundException;
+import br.com.gustavo.gym.organizer.exception.PermissionDeniedException;
 import br.com.gustavo.gym.organizer.exception.UserNotFoundException;
 import br.com.gustavo.gym.organizer.model.ExercisesModel;
 import br.com.gustavo.gym.organizer.model.UsersModel;
@@ -63,7 +64,7 @@ public class ExercisesService {
                 .orElseThrow(() -> new ExerciseNotFoundException("Exercício não encontrado: " + exerciseId));
 
         if (!exercise.getUser().getUserId().equals(user.getUserId())) {
-            throw new RuntimeException("Você não tem permissão para atualizar este exercício.");
+            throw new PermissionDeniedException("Você não tem permissão para atualizar este exercício.");
         }
 
         if (!exercise.getExerciseId().equals(exerciseId)) {
