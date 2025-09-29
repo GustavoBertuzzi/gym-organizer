@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,7 +54,7 @@ public class UsersService implements UserDetailsService {
     }
 
     public UsersModel updateProfile(UserRegisterDTO dto, String email) {
-        UsersModel user = loadUserEntityByEmail(email); // <- USANDO AQUI
+        UsersModel user = loadUserEntityByEmail(email);
 
         if (dto.email() != null && !dto.email().isBlank() &&
                 !dto.email().equals(user.getEmail()) &&
@@ -67,6 +68,7 @@ public class UsersService implements UserDetailsService {
 
         if (dto.password() != null && !dto.password().isBlank()) {
             user.setPassword(passwordEncoder.encode(dto.password()));
+            user.setLastPasswordChange(LocalDateTime.now());
         }
 
         return usersRepository.save(user);
@@ -74,7 +76,7 @@ public class UsersService implements UserDetailsService {
 
     @Transactional
     public void deleteByEmail(String email) {
-        UsersModel user = loadUserEntityByEmail(email); // <- USANDO AQUI
+        UsersModel user = loadUserEntityByEmail(email);
 
         List<ExercisesModel> exercise = exercisesRepository.findByUser(user);
 
