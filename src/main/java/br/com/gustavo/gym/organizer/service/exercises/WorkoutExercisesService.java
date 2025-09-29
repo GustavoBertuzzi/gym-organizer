@@ -12,6 +12,7 @@ import br.com.gustavo.gym.organizer.repository.ExercisesRepository;
 import br.com.gustavo.gym.organizer.repository.UsersRepository;
 import br.com.gustavo.gym.organizer.repository.WorkoutExercisesRepository;
 import br.com.gustavo.gym.organizer.repository.WorkoutSessionsRepository;
+import br.com.gustavo.gym.organizer.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,9 +33,11 @@ public class WorkoutExercisesService {
     @Autowired
     private UsersRepository usersRepository;
 
+    @Autowired
+    private UsersService usersService;
+
     public WorkoutExerciseModel addWorkoutExercise(WorkoutExercisesDTO dto, String email) {
-        UsersModel user = usersRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado: " + email));
+        UsersModel user = usersService.loadUserEntityByEmail(email);
 
         WorkoutSessionsModel session = workoutSessionsRepository.findById(dto.sessionId())
                 .orElseThrow(() -> new WorkoutSessionNotFoundException("Sessão não encontrada: " + dto.sessionId()));
@@ -58,8 +61,7 @@ public class WorkoutExercisesService {
     }
 
     public List<WorkoutExerciseModel> getWorkoutExercises(Long sessionId, String email) {
-        UsersModel user = usersRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado: " + email));
+        UsersModel user = usersService.loadUserEntityByEmail(email);
 
         WorkoutSessionsModel session = workoutSessionsRepository.findById(sessionId)
                 .orElseThrow(() -> new WorkoutSessionNotFoundException("Sessão não encontrada: " + sessionId));
@@ -72,8 +74,7 @@ public class WorkoutExercisesService {
     }
 
     public WorkoutExerciseModel updateWorkoutExercise(Long workoutExerciseId, WorkoutExercisesDTO dto, String email) {
-        UsersModel user = usersRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado: " + email));
+        UsersModel user = usersService.loadUserEntityByEmail(email);
 
         WorkoutExerciseModel workoutExercise = workoutExercisesRepository.findById(workoutExerciseId)
                 .orElseThrow(() -> new RuntimeException("Exercício da sessão não encontrado: " + workoutExerciseId));
@@ -91,8 +92,7 @@ public class WorkoutExercisesService {
     }
 
     public void deleteWorkoutExercise(Long workoutExerciseId, String email) {
-        UsersModel user = usersRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado: " + email));
+        UsersModel user = usersService.loadUserEntityByEmail(email);
 
         WorkoutExerciseModel workoutExercise = workoutExercisesRepository.findById(workoutExerciseId)
                 .orElseThrow(() -> new RuntimeException("Exercício da sessão não encontrado: " + workoutExerciseId));
@@ -105,8 +105,7 @@ public class WorkoutExercisesService {
     }
 
     public WorkoutSessionsModel getWorkoutSessionByIdAndUser(Long sessionId, String email) {
-        UsersModel user = usersRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        UsersModel user = usersService.loadUserEntityByEmail(email);
 
         WorkoutSessionsModel session = workoutSessionsRepository
                 .findBySessionIdAndUser(sessionId, user)

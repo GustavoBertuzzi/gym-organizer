@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 public class LoginService {
 
     @Autowired
-    private UsersRepository usersRepository;
+    private UsersService usersService;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -23,20 +23,18 @@ public class LoginService {
     private TokenService tokenService;
 
     public UserTokenDTO authenticate(String email, String password) {
-        UsersModel user = usersRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("Usuário ou login não encontrados"));
+        UsersModel user = usersService.loadUserEntityByEmail(email);
 
         try {
-            // Usa o e-mail como "username" para o Spring Security
             var authToken = new UsernamePasswordAuthenticationToken(email, password);
             authenticationManager.authenticate(authToken);
         } catch (Exception e) {
             throw new BadCredentialsException("Senha incorreta");
         }
 
-        // Gera o token JWT
         var token = tokenService.generateToken(user);
 
         return new UserTokenDTO(token);
     }
 }
+

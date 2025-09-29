@@ -8,6 +8,7 @@ import br.com.gustavo.gym.organizer.model.ExercisesModel;
 import br.com.gustavo.gym.organizer.model.UsersModel;
 import br.com.gustavo.gym.organizer.repository.ExercisesRepository;
 import br.com.gustavo.gym.organizer.repository.UsersRepository;
+import br.com.gustavo.gym.organizer.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,9 +23,11 @@ public class ExercisesService {
     @Autowired
     private UsersRepository usersRepository;
 
+    @Autowired
+    private UsersService usersService;
+
     public ExercisesModel AddExercise (ExercisesAddDTO exercisesAddDTO, String email){
-        UsersModel user = usersRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado: " + email));
+        UsersModel user = usersService.loadUserEntityByEmail(email);
 
         boolean exists = exercisesRepository.existsByUserAndNameAndDescriptionAndEquipmentAndMuscleGroup(
                 user,
@@ -48,15 +51,13 @@ public class ExercisesService {
     }
 
     public List<ExercisesModel> showExercises(String email){
-        UsersModel user = usersRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado: " + email));
+        UsersModel user = usersService.loadUserEntityByEmail(email);
 
         return exercisesRepository.findByUser(user);
     }
 
     public ExercisesModel updateExercises(String email, Long exerciseId, ExercisesAddDTO dto) {
-        UsersModel user = usersRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado: " + email));
+        UsersModel user = usersService.loadUserEntityByEmail(email);
 
         ExercisesModel exercise = exercisesRepository.findById(exerciseId)
                 .orElseThrow(() -> new ExerciseNotFoundException("Exercício não encontrado: " + exerciseId));
@@ -85,8 +86,7 @@ public class ExercisesService {
     }
 
     public void deleteExercises (String email, Long exerciseId){
-        UsersModel user = usersRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado: " + email));
+        UsersModel user = usersService.loadUserEntityByEmail(email);
 
         ExercisesModel exercise = exercisesRepository.findById(exerciseId)
                 .orElseThrow(() -> new ExerciseNotFoundException("Exercício não encontrado: " + exerciseId));

@@ -7,6 +7,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -21,9 +22,13 @@ public class TokenService {
     public String generateToken(UsersModel usersModel){
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
+
             return JWT.create()
                     .withIssuer("auth-api")
-                    .withSubject(usersModel.getEmail()) // email do usuário
+                    .withSubject(usersModel.getEmail())
+                    .withClaim("lastPasswordChange", usersModel.getLastPasswordChange() != null
+                            ? usersModel.getLastPasswordChange().toString()
+                            : "")
                     .withExpiresAt(genExpirationDate())
                     .sign(algorithm);
         } catch(JWTCreationException exception){
@@ -31,16 +36,37 @@ public class TokenService {
         }
     }
 
-    public String validateToken(String token){
+    public String validateToken(String token, UsersModel user){
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
-            return JWT.require(algorithm)
+            DecodedJWT decodedJWT = JWT.require(algorithm)
                     .withIssuer("auth-api")
                     .build()
-                    .verify(token)
-                    .getSubject(); // retorna o email
+                    .verify(token);
+
+            String tokenEmail = decodedJWT.getSubject();
+            String tokenLastChange = decodedJWT.getClaim("lastPasswordChange").asString();
+            String userLastChange = user.getLastPasswordChange() != null
+                    ? user.getLastPasswordChange().toString()
+                    : "";
+
+            if (!tokenLastChange.equals(userLastChange)) {
+                return null;
+            }
+
+            return tokenEmail;
+
         } catch (JWTVerificationException exception) {
-            return null; // token inválido ou expirado
+            return null;
+        }
+    }
+
+    public String getEmailFromToken(String token) {
+        try {
+            DecodedJWT decodedJWT = JWT.decode(token);
+            return decodedJWT.getSubject();
+        } catch (Exception e) {
+            return null;
         }
     }
 

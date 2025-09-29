@@ -1,7 +1,10 @@
 package br.com.gustavo.gym.organizer.security;
 
+import br.com.gustavo.gym.organizer.model.UsersModel;
 import br.com.gustavo.gym.organizer.service.TokenService;
 import br.com.gustavo.gym.organizer.service.UsersService;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,7 +37,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
-            email = tokenService.validateToken(token);
+
+            // Primeiro busca o usuário completo pelo email do token
+            String tokenEmail = tokenService.getEmailFromToken(token);
+            if (tokenEmail != null) {
+                UsersModel user = usersService.loadUserEntityByEmail(tokenEmail); // método novo que retorna UsersModel
+                email = tokenService.validateToken(token, user); // agora passa o usuário completo
+            }
         }
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {

@@ -15,15 +15,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 @Service
 @AllArgsConstructor
+@Slf4j
 public class UsersService implements UserDetailsService {
 
     private final UsersRepository usersRepository;
@@ -52,8 +53,7 @@ public class UsersService implements UserDetailsService {
     }
 
     public UsersModel updateProfile(UserRegisterDTO dto, String email) {
-        UsersModel user = usersRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado: " + email));
+        UsersModel user = loadUserEntityByEmail(email); // <- USANDO AQUI
 
         if (dto.email() != null && !dto.email().isBlank() &&
                 !dto.email().equals(user.getEmail()) &&
@@ -74,8 +74,7 @@ public class UsersService implements UserDetailsService {
 
     @Transactional
     public void deleteByEmail(String email) {
-        UsersModel user = usersRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado: " + email));
+        UsersModel user = loadUserEntityByEmail(email); // <- USANDO AQUI
 
         List<ExercisesModel> exercise = exercisesRepository.findByUser(user);
 
@@ -84,5 +83,10 @@ public class UsersService implements UserDetailsService {
         }
 
         usersRepository.deleteByEmail(email);
+    }
+
+    public UsersModel loadUserEntityByEmail(String email) {
+        return usersRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + email));
     }
 }
