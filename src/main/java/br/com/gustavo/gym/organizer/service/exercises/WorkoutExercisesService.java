@@ -104,10 +104,10 @@ public class WorkoutExercisesService {
         workoutExercisesRepository.delete(workoutExercise);
     }
 
-    public WorkoutExerciseModel getWorkoutSessionByIdAndUser(Long sessionId, String email) {
+    public WorkoutSessionsModel getWorkoutSessionByIdAndUser(Long sessionId, String email) {
         UsersModel user = usersService.loadUserEntityByEmail(email);
 
-        WorkoutExerciseModel session = workoutExercisesRepository
+        WorkoutSessionsModel session = workoutExercisesRepository
                 .findBySessionIdAndUser(sessionId, user)
                 .orElseThrow(() -> new RuntimeException("Sessão não encontrada para este usuário"));
 

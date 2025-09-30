@@ -10,6 +10,6 @@ import java.util.Optional;
 
 public interface WorkoutExercisesRepository extends JpaRepository<WorkoutExerciseModel, Long> {
     List<WorkoutExerciseModel> findBySession(WorkoutSessionsModel session);
-    Optional<WorkoutExerciseModel> findBySessionIdAndUser(Long sessionId, UsersModel user);
+    Optional<WorkoutSessionsModel> findBySessionIdAndUser(Long sessionId, UsersModel user);
 
 }
