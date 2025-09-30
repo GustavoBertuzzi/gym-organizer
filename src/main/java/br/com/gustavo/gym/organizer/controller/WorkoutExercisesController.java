@@ -27,7 +27,10 @@ public class WorkoutExercisesController {
     }
 
     @GetMapping("/get/{sessionId}")
-    public ResponseEntity<?> getWorkoutExercises(@PathVariable Long sessionId, Authentication authentication) {
+    public ResponseEntity<WorkoutSessionsResponseDTO> getWorkoutExercises(
+            @PathVariable Long sessionId,
+            Authentication authentication
+    ) {
         String email = authentication.getName();
         WorkoutSessionsModel session = workoutExercisesService.getWorkoutSessionByIdAndUser(sessionId, email);
 

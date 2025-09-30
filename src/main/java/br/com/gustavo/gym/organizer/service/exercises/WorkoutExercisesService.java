@@ -107,10 +107,15 @@ public class WorkoutExercisesService {
     public WorkoutSessionsModel getWorkoutSessionByIdAndUser(Long sessionId, String email) {
         UsersModel user = usersService.loadUserEntityByEmail(email);
 
-        WorkoutSessionsModel session = workoutExercisesRepository
-                .findBySessionIdAndUser(sessionId, user)
-                .orElseThrow(() -> new RuntimeException("Sessão não encontrada para este usuário"));
+        WorkoutSessionsModel session = workoutSessionsRepository.findById(sessionId)
+                .orElseThrow(() -> new RuntimeException("Sessão não encontrada"));
+
+        if (!session.getUser().getUserId().equals(user.getUserId())) {
+            throw new RuntimeException("Você não tem permissão para acessar esta sessão");
+        }
 
         return session;
     }
+
+
 }
