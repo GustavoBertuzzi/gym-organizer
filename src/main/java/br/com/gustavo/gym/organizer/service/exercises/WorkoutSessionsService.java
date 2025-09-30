@@ -2,7 +2,9 @@ package br.com.gustavo.gym.organizer.service.exercises;
 
 import br.com.gustavo.gym.organizer.dto.exercisesDTO.WorkoutSessionsDTO;
 import br.com.gustavo.gym.organizer.dto.responseDTO.WorkoutSessionsGetResponseDTO;
+import br.com.gustavo.gym.organizer.dto.responseDTO.WorkoutSessionsResponseDTO;
 import br.com.gustavo.gym.organizer.exception.UserNotFoundException;
+import br.com.gustavo.gym.organizer.mapper.WorkoutSessionsMapper;
 import br.com.gustavo.gym.organizer.model.ExercisesModel;
 import br.com.gustavo.gym.organizer.model.UsersModel;
 import br.com.gustavo.gym.organizer.model.WorkoutSessionsModel;
@@ -40,15 +42,16 @@ public class WorkoutSessionsService {
         return workoutSessionsRepository.save(session);
     }
 
-    public List<WorkoutSessionsGetResponseDTO> getAllSessions(String email) {
+    public List<WorkoutSessionsResponseDTO> getAllSessions(String email) {
         UsersModel user = usersService.loadUserEntityByEmail(email);
 
         List<WorkoutSessionsModel> sessions = workoutSessionsRepository.findByUser(user);
 
         return sessions.stream()
-                .map(WorkoutSessionsGetResponseDTO::new)
+                .map(WorkoutSessionsMapper::toResponse)
                 .toList();
     }
+
 
     public WorkoutSessionsModel getSessionById(Long id, String email) {
         UsersModel user = usersService.loadUserEntityByEmail(email);
