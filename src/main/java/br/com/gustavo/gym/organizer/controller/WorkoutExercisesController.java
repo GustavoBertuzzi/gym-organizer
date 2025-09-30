@@ -1,8 +1,9 @@
 package br.com.gustavo.gym.organizer.controller;
 
 import br.com.gustavo.gym.organizer.dto.exercisesDTO.WorkoutExercisesDTO;
+import br.com.gustavo.gym.organizer.dto.responseDTO.WorkoutExerciseResponseDTO;
 import br.com.gustavo.gym.organizer.dto.responseDTO.WorkoutSessionsResponseDTO;
-import br.com.gustavo.gym.organizer.mapper.WorkoutSessionsMapper;
+import br.com.gustavo.gym.organizer.mapper.Mapper;
 import br.com.gustavo.gym.organizer.model.WorkoutExerciseModel;
 import br.com.gustavo.gym.organizer.model.WorkoutSessionsModel;
 import br.com.gustavo.gym.organizer.service.exercises.WorkoutExercisesService;
@@ -28,9 +29,9 @@ public class WorkoutExercisesController {
     @GetMapping("/get/{sessionId}")
     public ResponseEntity<?> getWorkoutExercises(@PathVariable Long sessionId, Authentication authentication) {
         String email = authentication.getName();
-        WorkoutSessionsModel session = workoutExercisesService.getWorkoutSessionByIdAndUser(sessionId, email);
+        WorkoutExerciseModel session = workoutExercisesService.getWorkoutSessionByIdAndUser(sessionId, email);
 
-        WorkoutSessionsResponseDTO responseDTO = WorkoutSessionsMapper.toResponse(session);
+        WorkoutExerciseResponseDTO responseDTO = Mapper.toResponse(session);
 
         return ResponseEntity.ok(responseDTO);
     }
