@@ -45,7 +45,7 @@ public class WorkoutSessionsService {
         List<WorkoutSessionsModel> sessions = workoutSessionsRepository.findByUser(user);
 
         return sessions.stream()
-                .map(Mapper::toResponse)
+                .map(Mapper::toWorkoutSessionDTO)
                 .toList();
     }
 

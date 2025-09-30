@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/workout-exercises")
 public class WorkoutExercisesController {
@@ -27,16 +29,18 @@ public class WorkoutExercisesController {
     }
 
     @GetMapping("/get/{sessionId}")
-    public ResponseEntity<WorkoutSessionsResponseDTO> getWorkoutExercises(
+    public ResponseEntity<List<WorkoutExerciseResponseDTO>> getWorkoutExercises(
             @PathVariable Long sessionId,
             Authentication authentication
     ) {
         String email = authentication.getName();
-        WorkoutSessionsModel session = workoutExercisesService.getWorkoutSessionByIdAndUser(sessionId, email);
+        List<WorkoutExerciseModel> exercises = workoutExercisesService.getWorkoutExercises(sessionId, email);
 
-        WorkoutSessionsResponseDTO responseDTO = Mapper.toResponse(session);
+        List<WorkoutExerciseResponseDTO> response = exercises.stream()
+                .map(Mapper::toWorkoutExerciseDTO)
+                .toList();
 
-        return ResponseEntity.ok(responseDTO);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/update/{workoutExerciseId}")
