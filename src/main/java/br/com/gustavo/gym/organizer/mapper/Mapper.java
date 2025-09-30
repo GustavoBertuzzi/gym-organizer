@@ -25,11 +25,11 @@ public class Mapper {
     public static WorkoutExerciseResponseDTO toWorkoutExerciseDTO(WorkoutExerciseModel model) {
         return new WorkoutExerciseResponseDTO(
                 model.getWorkoutExerciseId(),
+                toExerciseDTO(model.getExercise()),
                 model.getWeight(),
                 model.getRepetitions(),
                 model.getSets(),
-                model.getBreakTime(),
-                toExerciseDTO(model.getExercise())
+                model.getBreakTime()
         );
     }
 
